@@ -12,13 +12,20 @@ export function Main() {
 
   function handleSaveTable(table: string) {
     setSelectedTable(table);
-    setIsTableModalVisible(false);
+    // setIsTableModalVisible(false);
+  }
+
+  function handleCancelOrder() {
+    setSelectedTable('');
   }
 
   return (
     <>
       <Container>
-        <Header />
+        <Header
+          selectedTable={selectedTable}
+          onCancelOrder={handleCancelOrder}
+        />
 
         <CategoriesContainer>
           <Categories />
