@@ -1,26 +1,39 @@
 import React, { useState } from "react";
+import { ActivityIndicator } from "react-native";
 import { Button } from "../components/Button";
 import { Cart } from "../components/Cart";
 import { Categories } from "../components/Categories";
 import { Header } from "../components/Header";
+import { Empty } from "../components/Icons/Empty";
 import { Menu } from "../components/Menu";
 import { TableModal } from "../components/TableModal";
+import { Text } from "../components/Text";
+import { products as mockProducts } from "../mocks/products";
 import { CartItem } from "../types/CartItem";
 import { Product } from "../types/Product";
-import { CategoriesContainer, Container, Footer, FooterContainer, MenuContainer } from "./styles";
+import {
+  CategoriesContainer,
+  CenteredContainer,
+  Container,
+  Footer,
+  FooterContainer,
+  MenuContainer,
+} from "./styles";
 
 export function Main() {
   const [isTableModalVisible, setIsTableModalVisible] = useState(false);
   const [selectedTable, setSelectedTable] = useState("");
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isLoading] = useState(false);
+  const [products] = useState<Product[]>(mockProducts);
 
   function handleSaveTable(table: string) {
     setSelectedTable(table);
     // setIsTableModalVisible(false);
   }
 
-  function handleCancelOrder() {
-    setSelectedTable('');
+  function handleResetOrder() {
+    setSelectedTable("");
     setCartItems([]);
   }
 
@@ -30,7 +43,9 @@ export function Main() {
     }
 
     setCartItems((prevState) => {
-      const itemIndex = prevState.findIndex(cartItem => cartItem.product._id === product._id);
+      const itemIndex = prevState.findIndex(
+        (cartItem) => cartItem.product._id === product._id
+      );
 
       if (itemIndex < 0) {
         return prevState.concat({
@@ -52,7 +67,7 @@ export function Main() {
   function handleDecrementCartItem(product: Product) {
     setCartItems((prevState) => {
       const itemIndex = prevState.findIndex(
-        cartItem => cartItem.product._id === product._id
+        (cartItem) => cartItem.product._id === product._id
       );
 
       const item = prevState[itemIndex];
@@ -78,24 +93,49 @@ export function Main() {
       <Container>
         <Header
           selectedTable={selectedTable}
-          onCancelOrder={handleCancelOrder}
+          onCancelOrder={handleResetOrder}
         />
 
-        <CategoriesContainer>
-          <Categories />
-        </CategoriesContainer>
+        {isLoading && (
+          <CenteredContainer>
+            <ActivityIndicator color="#D73035" size="large" />
+          </CenteredContainer>
+        )}
 
-        <MenuContainer>
-          <Menu onAddToCart={handleAddToCart} />
-        </MenuContainer>
+        {!isLoading && (
+          <>
+            <CategoriesContainer>
+              <Categories />
+            </CategoriesContainer>
+
+            {products.length > 0 ? (
+              <MenuContainer>
+                <Menu
+                  onAddToCart={handleAddToCart}
+                  products={products}
+                />
+              </MenuContainer>
+            ): (
+              <CenteredContainer>
+                <Empty />
+                <Text color="#666" style={{ marginTop: 24 }}>
+                  Nenhum produto foi encontrado!
+                </Text>
+              </CenteredContainer>
+            )}
+          </>
+        )}
       </Container>
 
       <Footer>
         <FooterContainer>
           {!selectedTable && (
-            <Button onPress={() => setIsTableModalVisible(true)}>
+            <Button
+              onPress={() => setIsTableModalVisible(true)}
+              disabled={isLoading}
+            >
               Novo Pedido
-          </Button>
+            </Button>
           )}
 
           {selectedTable && (
@@ -103,6 +143,7 @@ export function Main() {
               cartItems={cartItems}
               onAdd={handleAddToCart}
               onDecrement={handleDecrementCartItem}
+              onConfirmOrder={handleResetOrder}
             />
           )}
         </FooterContainer>
@@ -114,5 +155,5 @@ export function Main() {
         onSave={handleSaveTable}
       />
     </>
-  )
+  );
 }

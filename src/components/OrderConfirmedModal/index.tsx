@@ -6,9 +6,10 @@ import { Container, OkButton } from "./styles";
 
 interface OrderConfirmedModalProps {
   visible: boolean;
+  onOk: () => void;
 }
 
-export function OrderConfirmedModal({ visible }: OrderConfirmedModalProps) {
+export function OrderConfirmedModal({ visible, onOk }: OrderConfirmedModalProps) {
   return (
     <Modal
       visible={visible}
@@ -23,7 +24,7 @@ export function OrderConfirmedModal({ visible }: OrderConfirmedModalProps) {
           O pedido já entrou na fila de produção!
         </Text>
 
-        <OkButton>
+        <OkButton onPress={onOk}>
           <Text color="#D73035" weight="600">
             OK
           </Text>

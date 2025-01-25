@@ -23,9 +23,11 @@ interface CartProps {
   cartItems: CartItem[];
   onAdd: (product: Product) => void;
   onDecrement: (product: Product) => void;
+  onConfirmOrder: () => void;
 }
 
-export function Cart({ cartItems, onAdd, onDecrement }: CartProps) {
+export function Cart({ cartItems, onAdd, onDecrement, onConfirmOrder }: CartProps) {
+  const [isLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const total = cartItems.reduce(( acc, cartItem) => {
@@ -36,9 +38,17 @@ export function Cart({ cartItems, onAdd, onDecrement }: CartProps) {
     setIsModalVisible(true);
   }
 
+  function handleOk() {
+    onConfirmOrder();
+    setIsModalVisible(false)
+  }
+
   return (
     <>
-      <OrderConfirmedModal visible={isModalVisible} />
+      <OrderConfirmedModal
+        visible={isModalVisible}
+        onOk={handleOk}
+      />
 
       {cartItems.length > 0 && (
         <FlatList
@@ -107,6 +117,7 @@ export function Cart({ cartItems, onAdd, onDecrement }: CartProps) {
         <Button
           onPress={handleConfirmOrder}
           disabled={cartItems.length === 0}
+          loading={isLoading}
         >
           Confirmar pedido
         </Button>
