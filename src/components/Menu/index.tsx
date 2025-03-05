@@ -7,7 +7,7 @@ import { Product } from "../../types/Product";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { PlusCircle } from "../Icons/PlusCircle";
 import { ProductModal } from "../ProductModal";
-import { AddToCartButton, ProductContainer, ProductImage, Separator } from "./styles";
+import { AddToCartButton, ProductContainer, ProductDetails, ProductImage, Separator } from "./styles";
 
 interface MenuProps {
   onAddToCart: (product: Product) => void;
@@ -41,14 +41,15 @@ export function Menu({ onAddToCart, products }: MenuProps) {
         renderItem={({ item: product}) => (
           <ProductContainer onPress={() => handleOpenModal(product)}>
             <ProductImage
-              souurce={{
-                uri: `http://192.168.0.16:3001/uploads/${product.imagePath}`,
+              source={{
+                uri: `http://192.168.0.21:3001/uploads/${product.imagePath}`,
               }}
             />
-
-            <Text weight={600} >{product.name}</Text>
-            <Text size={14} color="#666" style={{ marginVertical: 8 }} >{product.description}</Text>
-            <Text size={14} weight={600} >{formatCurrency(product.price)}</Text>
+            <ProductDetails>
+              <Text weight={600} >{product.name}</Text>
+              <Text size={14} color="#666" style={{ marginVertical: 8 }} >{product.description}</Text>
+              <Text size={14} weight={600} >{formatCurrency(product.price)}</Text>
+            </ProductDetails>
 
             <AddToCartButton onPress={() => onAddToCart(product)}>
               <PlusCircle />
